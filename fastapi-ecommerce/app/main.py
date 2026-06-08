@@ -1,6 +1,6 @@
 from fastapi import FastAPI,HTTPException,Query,Path
 from services.products import get_all_products
-from pydantic import BaseModel
+from schema.product import Product
 app = FastAPI()
 
 @app.get("/") # static route - which will give you same output every time you run it
@@ -59,11 +59,7 @@ def get_product_by_id(product_id:str=Path(
             return product
     raise HTTPException(status_code=404,detail="Product not found")    
 
-class Product(BaseModel): #this is how we insert our data 
-    id:str
-    sku:str
-    name:str
 
 @app.post("/products",status_code=201)
 def create_product(product:Product):
-    return product
+    return product.model_dump(mode="json")
