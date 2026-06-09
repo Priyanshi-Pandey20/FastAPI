@@ -12,6 +12,12 @@ from typing import Annotated, Literal, Optional, List
 from uuid import UUID
 from datetime import datetime
 
+class DimensionCM(BaseModel):
+    length:Annotated[float,Field(gt=0,strict=True,description="Length in cm")]
+    width:Annotated[float,Field(gt=0,strict=True,description="Width in cm")]
+    height:Annotated[float,Field(gt=0,strict=True,description="Height in cm")]
+
+
 
 class Seller(BaseModel):
 
@@ -34,7 +40,18 @@ class Seller(BaseModel):
     @classmethod
     def validate_seller_email_domain(cls, value: EmailStr):
 
-       allowed_domains =["mistore.in","hpworld.in"]
+       allowed_domains ={
+           "mistore.in",
+           "hpworld.in",
+           "samsungindia.in",
+           "lenovostore.in",
+           "realmeoffice.in",
+           "applestore.in",
+           "dellexclusive.in",
+           "oneplusstore.in",
+           "asusexclusive.in",
+
+            }
        domain = str(value).split("@")[-1].lower()
        if domain not in allowed_domains:
            raise ValueError(f"Seller email domain not allowed:{domain}")
@@ -157,7 +174,7 @@ class Product(BaseModel):
         )
     ]
 
-    
+    dimensions_cm :DimensionCM
     seller:Seller
     created_at: datetime
 
@@ -200,5 +217,12 @@ class Product(BaseModel):
     @property
     def final_price(self) -> float:
         return round(self.price * (1 -self.discount_percent/100),2)
+    
+    @computed_field
+    @property
+    def volume_cm3(self) -> float:
+        d = self.dimensions_cm
+        return round(d.length * d.width * d.height,2)
+        
     
 
