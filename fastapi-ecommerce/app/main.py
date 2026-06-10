@@ -1,7 +1,7 @@
 from fastapi import FastAPI,HTTPException,Query,Path
-from services.products import get_all_products,add_product
-from schema.product import Product
-from uuid import uuid4
+from services.products import get_all_products,add_product,remove_product,change_product
+from schema.product import Product,ProductUpdate
+from uuid import uuid4,UUID
 from datetime import datetime
 app = FastAPI()
 
@@ -61,7 +61,7 @@ def get_product_by_id(product_id:str=Path(
             return product
     raise HTTPException(status_code=404,detail="Product not found")    
 
-
+#create our data
 @app.post("/products",status_code=201)
 def create_product(product:Product):
     product_dict = product.model_dump(mode="json")
@@ -72,3 +72,38 @@ def create_product(product:Product):
     except ValueError as e:
         raise HTTPException(status_code=400,detail=str(e))    
     return product.model_dump(mode="json")
+
+#delete our data
+@app.delete("/products/{product_id}")
+def delete_product(product_id:UUID=Path(...,description="Product ID")):
+    try:
+        res = remove_product(str(product_id))
+        return res
+    except Exception as e:
+        raise HTTPException(status_code=400,detail=str(e))    
+
+#update in data
+@app.put("/products/{product_id}")
+def update_product(
+    product_id: UUID = Path(..., description="Product UUID"),
+    payload: ProductUpdate = ...
+):
+
+    try:
+
+        updated_product = change_product(
+            str(product_id),
+            payload.model_dump(
+                mode="json",
+                exclude_unset=True
+            )
+        )
+
+        return updated_product
+
+    except Exception as e:
+
+        raise HTTPException(
+            status_code=404,
+            detail=str(e)
+        )
