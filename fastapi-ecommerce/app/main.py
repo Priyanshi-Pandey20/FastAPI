@@ -1,14 +1,41 @@
-from fastapi import FastAPI,HTTPException,Query,Path
-from services.products import get_all_products,add_product,remove_product,change_product
+from dotenv import load_dotenv
+import os
+
+from fastapi import FastAPI,HTTPException,Query,Path,Depends,Request
+from fastapi.responses import JSONResponse
+from services.products import get_all_products,add_product,remove_product,change_product,load_products
 from schema.product import Product,ProductUpdate
 from uuid import uuid4,UUID
 from datetime import datetime
+
+load_dotenv()
 app = FastAPI()
 
-@app.get("/") # static route - which will give you same output every time you run it
-def root():
-    return{"message":"Welcome to FastApi"}
+# @app.middleware("http")
+# async def lifecycle(request:Request,call_next):
+#     print("Before request")
+#     response = await call_next(request)
+#     # response["lifecycle"] = "was inside"
+#     print("After request")
+#     return response
 
+
+def common_logic():
+    print("Hello World")
+    return "Hello There"
+
+@app.get("/") # static route - which will give you same output every time you run it
+def root(dep=Depends(common_logic)):
+    DB_PATH = os.getenv("BASE_URL")
+    # return{"message":"Welcome to FastApi","dependency":dep,"data-path":DB_PATH}
+    return JSONResponse(
+        status_code=200,
+        content={
+            "message":"Welcome to FastAPI.",
+            "dependency":dep,
+            "data-path":DB_PATH
+        }
+    )
 
 # # @app.get("/products") #dynamic route 
 # def get_products():
@@ -16,7 +43,9 @@ def root():
 
 #we are taking out products after doing filterout 
 @app.get("/products")
-def list_products(name:str=Query(
+def list_products(
+    dep=Depends(load_products),
+    name:str=Query(
 default=None,
 min_length=1, max_length=50,
 description="Search by product name(case insensitive)"
@@ -28,7 +57,7 @@ sort_by_price:bool = Query(
     offset:int = Query(default=0,ge=0,description="Pagination offset")
 
 ):
-    products = get_all_products()
+    products = dep
     if name:
         needle = name.strip().lower()
         products = [p for p in products if needle in p.get("name","").lower()]
