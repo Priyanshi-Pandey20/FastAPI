@@ -2,9 +2,18 @@ from fastapi import FastAPI
 from schema import CarFeatures,PredictionResponse
 from fastapi.responses import JSONResponse
 from model import predict_price,load_artifacts
+from fastapi.middleware.cors import CORSMiddleware
 
 
 app = FastAPI(title="Car Price Prediction API",version="1.0")
+
+app.add_Middleware(
+    CORSMiddleware,
+    allow_origin=["*"],
+    allow_credentials=True,
+    allow_method=["*"],
+    allow_headers=["*"]
+)
 
 @app.on_event("startup")
 def startup_event():
@@ -12,7 +21,9 @@ def startup_event():
 
 @app.get("/")
 def test():
-    return JSONResponse(status_code=200,content={ "success":True,"message":"this is test route"})    
+    return JSONResponse(status_code=200,content={ "success":True,"message":"this is test route"}) 
+
+
 
 
 
