@@ -2,7 +2,7 @@ from pathlib import Path
 import pandas as pd
 import joblib
 
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent
 
 DATA_PATH = BASE_DIR / "cardekho_data (1).csv"
 MODEL_PATH = BASE_DIR / "random_forest_model.pkl"
