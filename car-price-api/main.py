@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(title="Car Price Prediction API",version="1.0")
 
-app.add_Middleware(
+app.add_middleware(
     CORSMiddleware,
     allow_origin=["*"],
     allow_credentials=True,
