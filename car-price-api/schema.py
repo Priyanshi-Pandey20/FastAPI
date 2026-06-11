@@ -8,7 +8,7 @@ class FuelType(str,Enum):
 
 class SellerType(str,Enum):
     dealer="Dealer"
-    indiviual="Indiviual"
+    individual="Individual"
 
 
 class TransmissionType(str,Enum):
@@ -19,7 +19,7 @@ class TransmissionType(str,Enum):
 
 class CarFeatures(BaseModel):
     Car_Name:str = Field(...,example="ritz")
-    Year:str = Field(...,example=2014)
+    Year:int = Field(...,example=2014)
     Present_Price:float= Field(...,example=5.59)
     Kms_Driven:int = Field(...,example=27000)
     Fuel_Type:FuelType
