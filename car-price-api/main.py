@@ -1,7 +1,7 @@
 from fastapi import FastAPI
-from app.schema import CarFeatures,PredictionResponse
+from schema import CarFeatures,PredictionResponse
 from fastapi.responses import JSONResponse
-from app.model import predict_price,load_artifacts
+from model import predict_price,load_artifacts
 
 
 app = FastAPI(title="Car Price Prediction API",version="1.0")
